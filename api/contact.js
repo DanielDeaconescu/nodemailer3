@@ -20,6 +20,23 @@ export default async (req, res) => {
       res.status(400).json({ error: "All fields are required!" });
     }
 
+    // Verify Turnstile
+    const responseToken = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          secret: process.env.TURNSTILE_SECRET_KEY,
+          response: data["cf-turnstile-response"],
+        }),
+      }
+    ).then((res) => res.json());
+
+    if (!responseToken.success) {
+      return res.status(400).json({ error: "CAPTCHA verification failed" });
+    }
+
     // 3. Send the email
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
