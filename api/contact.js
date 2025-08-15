@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-import axios from "axios";
 
 export default async (req, res) => {
   try {
@@ -21,21 +20,19 @@ export default async (req, res) => {
       res.status(400).json({ error: "All fields are required!" });
     }
 
-    const turnstileResponse = await axios
-      .post(
-        "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-        new URLSearchParams({
+    const turnstileResponse = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
           secret: process.env.TURNSTILE_SECRET_KEY,
           response: data["cf-turnstile-response"],
         }),
-        {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          timeout: 3000,
-        }
-      )
-      .catch(() => ({ data: { success: false } }));
+      }
+    ).then((res) => res.json());
 
-    if (!turnstileResponse.data.success) {
+    if (!turnstileResponse.success) {
       return res.status(400).json({ error: "CAPTCHA verification failed" });
     }
 
