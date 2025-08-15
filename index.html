@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gathering data & Sending with Nodemailer</title>
     <link rel="stylesheet" href="style.css" />
+    <script
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+      async
+      defer
+    ></script>
   </head>
   <body>
     <form id="contactForm">
@@ -17,6 +22,7 @@
       <div>
         <textarea name="message" placeholder="Message..."></textarea>
       </div>
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAABr_bBNcVT21K8Bw"></div>
       <div>
         <button type="submit">Submit</button>
       </div>

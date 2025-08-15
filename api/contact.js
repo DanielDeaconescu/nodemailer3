@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import axios from "axios";
 
 export default async (req, res) => {
   try {
@@ -19,6 +20,22 @@ export default async (req, res) => {
     if (!data.name || !data.email || !data.message) {
       res.status(400).json({ error: "All fields are required!" });
     }
+
+    const turnstileResponse = await axios.post(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      new URLSearchParams({
+        secret: process.env.TURNSTILE_SECRET_KEY,
+        response: data["cf-turnstile-response"],
+      }),
+      {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      }
+    );
+
+    if (!turnstileResponse.data.success) {
+      return res.status(400).json({ error: "CAPTCHA verification failed" });
+    }
+
     // 3. Send the email
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,

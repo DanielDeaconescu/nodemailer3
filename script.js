@@ -43,6 +43,15 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const form = e.target;
 
+  // Validate Turnstile
+  const turnstileToken = document.querySelector(
+    '[name="cf-turnstile-response"]'
+  )?.value;
+  if (!turnstileToken) {
+    showToast("Please complete CAPTCHA verification", true);
+    return;
+  }
+
   // Validate
   const errors = validateForm(form);
   if (errors.length > 0) {
@@ -55,6 +64,7 @@ form.addEventListener("submit", async (e) => {
     name: form.elements.name.value,
     email: form.elements.email.value,
     message: form.elements.message.value,
+    "cf-turnstile-response": turnstileToken,
   };
 
   try {
