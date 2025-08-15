@@ -21,16 +21,19 @@ export default async (req, res) => {
       res.status(400).json({ error: "All fields are required!" });
     }
 
-    const turnstileResponse = await axios.post(
-      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-      new URLSearchParams({
-        secret: process.env.TURNSTILE_SECRET_KEY,
-        response: data["cf-turnstile-response"],
-      }),
-      {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      }
-    );
+    const turnstileResponse = await axios
+      .post(
+        "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        new URLSearchParams({
+          secret: process.env.TURNSTILE_SECRET_KEY,
+          response: data["cf-turnstile-response"],
+        }),
+        {
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          timeout: 3000,
+        }
+      )
+      .catch(() => ({ data: { success: false } }));
 
     if (!turnstileResponse.data.success) {
       return res.status(400).json({ error: "CAPTCHA verification failed" });
