@@ -16,7 +16,12 @@ export default async (req, res) => {
       req.on("error", reject);
     });
     // 2. Validate
-    if (!data.name || !data.email || !data.message) {
+    if (
+      !data.name ||
+      !data.email ||
+      !data.message ||
+      !data["cf-turnstile-response"]
+    ) {
       res.status(400).json({ error: "All fields are required!" });
     }
 

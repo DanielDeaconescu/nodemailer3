@@ -6,7 +6,7 @@ const showToast = (message, isError = false) => {
   toast.textContent = message;
 
   setTimeout(() => {
-    toast.classList.add("toast-hidden");
+    toast.classList.remove("toast-visible");
   }, 3000);
 };
 
@@ -22,7 +22,7 @@ const validateForm = (form) => {
   // If a field is missing, add an error to the errors array
   fields.forEach((field) => {
     if (!form.elements[field.name].value.trim()) {
-      errors.push(`${field.label} is required!`);
+      errors.push(`${field.label} is required`);
     }
   });
 
